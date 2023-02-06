@@ -17,6 +17,10 @@ type Operacion struct {
 	Fecha time.Time
 }
 
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 func conectDataBase() (*sql.DB, error) {
 	connectionString := "root:password@tcp(localhost:3306)/DBCalculadora?parseTime=True"
 	db, err := sql.Open("mysql", connectionString)
@@ -62,6 +66,8 @@ func index(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
 	if r.Method == "GET" {
+		enableCors(&w)
+
 		db, err := conectDataBase()
 
 		if err != nil {
