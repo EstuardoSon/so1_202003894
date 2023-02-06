@@ -8,4 +8,7 @@ create table if not exists Operacion(
     Fecha datetime
 );
 
+insert into Operacion values (12,13,'+','2020-01-01 15:10:10');
+insert into Operacion values (12,13,'-','2020-01-01 15:10:10');
+
 select * from Operacion;
