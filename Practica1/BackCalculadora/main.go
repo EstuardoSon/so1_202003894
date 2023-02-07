@@ -3,11 +3,10 @@ package main
 import (
 	"context"
 	"database/sql"
-	"os"
-	"os/signal"
-	"syscall"
+	"net/http"
 
 	"github.com/EstuardoSon/server"
+	"github.com/rs/cors"
 )
 
 func consultaDataBase(ctx context.Context, db *sql.DB) error {
@@ -15,15 +14,8 @@ func consultaDataBase(ctx context.Context, db *sql.DB) error {
 }
 
 func main() {
-	ctx := context.Background()
-	serverDone := make(chan os.Signal, 1)
-	signal.Notify(serverDone, os.Interrupt, syscall.SIGTERM)
+	mux := server.New()
 
-	srv := server.New(":8080")
-
-	go srv.ListenAndServe()
-
-	<-serverDone
-
-	srv.Shutdown(ctx)
+	handler := cors.Default().Handler(mux)
+	http.ListenAndServe(":8080", handler)
 }

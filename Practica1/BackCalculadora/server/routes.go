@@ -2,6 +2,6 @@ package server
 
 import "net/http"
 
-func initRoutes() {
-	http.HandleFunc("/", index)
+func initRoutes(mux *http.ServeMux) {
+	(*mux).HandleFunc("/", index)
 }
