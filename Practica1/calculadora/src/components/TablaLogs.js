@@ -1,25 +1,7 @@
 import React, { Component } from "react";
-import Axios from "axios";
 
 class TablaLogs extends Component {
-  state = {
-    operaciones: [],
-  };
-
-  componentDidMount = () => {
-    Axios.get("http://localhost:8080/")
-      .then((response) => {
-        this.setState({
-          operaciones: response.data,
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
   render() {
-    const { operaciones } = this.state;
     var n = 0
     return (
       <table className="table table-hover">
@@ -33,8 +15,8 @@ class TablaLogs extends Component {
         </thead>
         <tbody>
           {
-          operaciones.length
-            ? operaciones.map((operacion) => (
+          this.props.Operaciones.length
+            ? this.props.Operaciones.map((operacion) => (
                 <tr key={++n} className="table-active">
                   <td>{operacion.Num1}</td>
                   <td>{operacion.Num2}</td>

@@ -1,6 +1,5 @@
 import "./App.css";
 import Calculadora from "./components/Calculadora";
-import TablaLogs from "./components/TablaLogs";
 
 
 function App() {
@@ -15,7 +14,6 @@ function App() {
         </div>
       </nav>
       <Calculadora />
-      <TablaLogs />
     </div>
   );
 }
