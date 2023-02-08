@@ -1,0 +1,40 @@
+version: "3.9"
+services:
+  calcureact:
+    image: calcureact
+    build:
+      context: ./calculadora
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:3000"
+
+  calcuDB:
+    image: calcudb
+    build:
+      context: ./DBCalculadora
+      dockerfile: Dockerfile
+    container_name: basedatos
+    environment:
+      MYSQL_DATABASE: "DBCalculadora"
+      MYSQL_USER: 'estuardo'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+    volumes:
+      - ./DBCalculadora/operaciones:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    
+  calcugo:
+    image: calcugo
+    build:
+      context: ./BackCalculadora
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - "8080:8080"
+    expose:
+      - '8080'
+
+volumes:
+  operaciones: {}

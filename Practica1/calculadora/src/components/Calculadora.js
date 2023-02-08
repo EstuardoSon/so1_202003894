@@ -37,7 +37,7 @@ class Calculadora extends Component {
   calcular = (e) => {
     e.preventDefault();
 
-    fetch("http://localhost:8080/", {
+    fetch("http://backend:8080/", {
       method: "POST",
       headers: {
         Accept: "application/json, text/plain, */*",
@@ -56,7 +56,7 @@ class Calculadora extends Component {
   };
 
   mostrarLogs = () => {
-    Axios.get("http://localhost:8080/")
+    Axios.get("http://backend:8080/")
       .then((response) => {
         this.setState({
           operaciones: response.data,
