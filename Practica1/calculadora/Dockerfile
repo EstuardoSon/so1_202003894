@@ -1,5 +1,5 @@
 #NODE
-FROM node:18
+FROM node:18 as frontend
 
 WORKDIR /app
 

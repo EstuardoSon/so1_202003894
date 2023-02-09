@@ -1,20 +1,18 @@
 version: "3.9"
 services:
   calcureact:
-    image: calcureact
     build:
       context: ./calculadora
       dockerfile: Dockerfile
-    container_name: frontend
+    container_name: estuardosonu_frontend_practica1_202003894
     ports:
       - "3000:3000"
 
-  calcuDB:
-    image: calcudb
+  calcudb:
     build:
       context: ./DBCalculadora
       dockerfile: Dockerfile
-    container_name: basedatos
+    container_name: estuardosonu_basedatos_practica1_202003894
     environment:
       MYSQL_DATABASE: "DBCalculadora"
       MYSQL_USER: 'estuardo'
@@ -26,15 +24,14 @@ services:
       - "3307:3306"
     
   calcugo:
-    image: calcugo
     build:
       context: ./BackCalculadora
       dockerfile: Dockerfile
-    container_name: backend
+    container_name: estuardosonu_backend_practica1_202003894
     ports:
       - "8080:8080"
     expose:
-      - '8080'
+      - "8080"
 
 volumes:
   operaciones: {}

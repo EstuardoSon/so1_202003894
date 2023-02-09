@@ -10,6 +10,7 @@ class TablaLogs extends Component {
             <th scope="col">Numero 1</th>
             <th scope="col">Numero 2</th>
             <th scope="col">Simbolo</th>
+            <th scope="col">Resultado</th>
             <th scope="col">Fecha</th>
           </tr>
         </thead>
@@ -21,6 +22,7 @@ class TablaLogs extends Component {
                   <td>{operacion.Num1}</td>
                   <td>{operacion.Num2}</td>
                   <td>{operacion.Signo}</td>
+                  <td>{operacion.Resultado}</td>
                   <td>{operacion.Fecha}</td>
                 </tr>
               ))

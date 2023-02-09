@@ -37,13 +37,13 @@ class Calculadora extends Component {
   calcular = (e) => {
     e.preventDefault();
 
-    fetch("http://backend:8080/", {
+    fetch("http://localhost:8080/", {
       method: "POST",
       headers: {
         Accept: "application/json, text/plain, */*",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(this.state),
+      body: JSON.stringify({Operacion: this.state.Operacion}),
     })
       .then((res) => res.json())
       .then((res) => {
@@ -56,7 +56,7 @@ class Calculadora extends Component {
   };
 
   mostrarLogs = () => {
-    Axios.get("http://backend:8080/")
+    Axios.get("http://localhost:8080/")
       .then((response) => {
         this.setState({
           operaciones: response.data,

@@ -12,10 +12,11 @@ import (
 )
 
 type Operacion struct {
-	Num1  int64
-	Num2  int64
-	Signo string
-	Fecha time.Time
+	Num1      int64
+	Num2      int64
+	Signo     string
+	Resultado string
+	Fecha     time.Time
 }
 
 type resultado struct {
@@ -27,7 +28,7 @@ type OperacionS struct {
 }
 
 func conectDataBase() (*sql.DB, error) {
-	connectionString := "root:password@tcp(basedatos:3306)/DBCalculadora?parseTime=True"
+	connectionString := "root:password@tcp(estuardosonu_basedatos_practica1_202003894:3306)/DBCalculadora?parseTime=True"
 	db, err := sql.Open("mysql", connectionString)
 
 	if err != nil {
@@ -55,7 +56,7 @@ func queryOperacion(w *http.ResponseWriter, ctx context.Context, db *sql.DB) err
 	for rows.Next() {
 		op := Operacion{}
 
-		err := rows.Scan(&op.Num1, &op.Num2, &op.Signo, &op.Fecha)
+		err := rows.Scan(&op.Num1, &op.Num2, &op.Signo, &op.Resultado, &op.Fecha)
 		if err != nil {
 			return err
 		}
@@ -102,30 +103,30 @@ func queryIngresar(w *http.ResponseWriter, ctx context.Context, db *sql.DB, oper
 		return err
 	}
 
-	qry := `insert into Operacion values (?,?,?,?);`
+	resultadoI := 0
+	if simbolo == "+" {
+		resultadoI = num1I + num2I
+		resultado.Resultado = strconv.Itoa(resultadoI)
+	} else if simbolo == "-" {
+		resultadoI = num1I - num2I
+		resultado.Resultado = strconv.Itoa(resultadoI)
+	} else if simbolo == "*" {
+		resultadoI = num1I * num2I
+		resultado.Resultado = strconv.Itoa(resultadoI)
+	} else if simbolo == "/" && num2I != 0 {
+		resultadoI = num1I / num2I
+		resultado.Resultado = strconv.Itoa(resultadoI)
+	}
 
-	_, errQ := db.ExecContext(ctx, qry, num1I, num2I, simbolo, fecha)
+	qry := `insert into Operacion values (?,?,?,?,?);`
+
+	_, errQ := db.ExecContext(ctx, qry, num1I, num2I, simbolo, resultado.Resultado, fecha)
 
 	if errQ != nil {
 		json.NewEncoder(*w).Encode(resultado)
 		return errQ
 	}
 
-	resultadoI := 0
-	if simbolo == "+" {
-		resultadoI = num1I + num2I
-	} else if simbolo == "-" {
-		resultadoI = num1I - num2I
-	} else if simbolo == "*" {
-		resultadoI = num1I * num2I
-	} else if simbolo == "/" {
-		resultadoI = num1I / num2I
-	} else {
-		json.NewEncoder(*w).Encode(resultado)
-		return errQ
-	}
-
-	resultado.Resultado = strconv.Itoa(resultadoI)
 	json.NewEncoder(*w).Encode(resultado)
 
 	return nil
