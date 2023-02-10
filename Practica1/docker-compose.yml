@@ -1,18 +1,10 @@
 version: "3.9"
 services:
-  calcureact:
-    build:
-      context: ./calculadora
-      dockerfile: Dockerfile
-    container_name: estuardosonu_frontend_practica1_202003894
-    ports:
-      - "3000:3000"
-
   calcudb:
     build:
       context: ./DBCalculadora
       dockerfile: Dockerfile
-    container_name: estuardosonu_basedatos_practica1_202003894
+    container_name: database
     environment:
       MYSQL_DATABASE: "DBCalculadora"
       MYSQL_USER: 'estuardo'
@@ -20,6 +12,8 @@ services:
       MYSQL_ROOT_PASSWORD: 'password'
     volumes:
       - ./DBCalculadora/operaciones:/var/lib/mysql
+    networks:
+      - practica1-so1
     ports:
       - "3307:3306"
     
@@ -27,11 +21,31 @@ services:
     build:
       context: ./BackCalculadora
       dockerfile: Dockerfile
-    container_name: estuardosonu_backend_practica1_202003894
+    container_name: backend
     ports:
       - "8080:8080"
     expose:
       - "8080"
+    networks:
+      - practica1-so1
+    depends_on:
+      - calcudb
+  
+  calcureact:
+    build:
+      context: ./calculadora
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - practica1-so1
+    depends_on:
+      - calcudb
+      - calcugo
 
 volumes:
   operaciones: {}
+
+networks:
+  practica1-so1:

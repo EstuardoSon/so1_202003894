@@ -28,7 +28,7 @@ type OperacionS struct {
 }
 
 func conectDataBase() (*sql.DB, error) {
-	connectionString := "root:password@tcp(estuardosonu_basedatos_practica1_202003894:3306)/DBCalculadora?parseTime=True"
+	connectionString := "root:password@tcp(database:3306)/DBCalculadora?parseTime=True"
 	db, err := sql.Open("mysql", connectionString)
 
 	if err != nil {
