@@ -4,7 +4,7 @@ El proposito de la presente practica es la elaboracion de una arquitectura clien
 
 | Servicio | Manual |
 | ------ | ------ |
-| Frontend | [calculadora/README.md][PlDb] |
-| Backend | [BackCalculadora/README.md][PlGh] |
-| Bash | [BashCalculadora/README.md][PlGd] |
-| Database | [DBCalculadora/README.md][PlOd] |
+| Frontend | [Practica1/calculadora/README.md] |
+| Backend | [Practica1/BackCalculadora/README.md] |
+| Bash | [Practica1/BashCalculadora/README.md] |
+| Database | [Practica1/DBCalculadora/README.md] |
