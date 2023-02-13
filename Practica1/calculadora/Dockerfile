@@ -1,5 +1,5 @@
 #NODE
-FROM node:18 as frontend
+FROM node:18-alpine as frontend
 
 WORKDIR /app
 

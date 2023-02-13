@@ -4,7 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -12,8 +14,8 @@ import (
 )
 
 type Operacion struct {
-	Num1      int64
-	Num2      int64
+	Num1      int
+	Num2      int
 	Signo     string
 	Resultado string
 	Fecha     time.Time
@@ -52,6 +54,7 @@ func queryOperacion(w *http.ResponseWriter, ctx context.Context, db *sql.DB) err
 	}
 
 	operaciones := []Operacion{}
+	filetext := ""
 
 	for rows.Next() {
 		op := Operacion{}
@@ -62,7 +65,20 @@ func queryOperacion(w *http.ResponseWriter, ctx context.Context, db *sql.DB) err
 		}
 
 		operaciones = append(operaciones, op)
+		filetext += strconv.Itoa(op.Num1) + " " + strconv.Itoa(op.Num2) + " " + op.Signo + " " + op.Resultado + " " + op.Fecha.String() + "\n"
 	}
+	file, err := os.Create("./Reporte/Reporte.txt")
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		defer file.Close()
+		_, err = file.WriteString(filetext)
+
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+	}
+
 	json.NewEncoder(*w).Encode(operaciones)
 
 	return nil

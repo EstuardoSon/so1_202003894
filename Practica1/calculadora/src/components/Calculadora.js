@@ -3,14 +3,14 @@ import Axios from "axios";
 import TablaLogs from "./TablaLogs";
 
 class Calculadora extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       Operacion: "",
-      operaciones:[]
+      operaciones: [],
     };
 
-    this.mostrarLogs()
+    this.mostrarLogs();
   }
 
   agregarDato = (e) => {
@@ -43,7 +43,7 @@ class Calculadora extends Component {
         Accept: "application/json, text/plain, */*",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({Operacion: this.state.Operacion}),
+      body: JSON.stringify({ Operacion: this.state.Operacion }),
     })
       .then((res) => res.json())
       .then((res) => {
@@ -51,7 +51,7 @@ class Calculadora extends Component {
         this.setState({
           Operacion: res.Resultado,
         });
-        this.mostrarLogs()
+        this.mostrarLogs();
       });
   };
 
@@ -65,7 +65,7 @@ class Calculadora extends Component {
       .catch((error) => {
         console.log(error);
       });
-  }
+  };
 
   render() {
     return (
@@ -229,7 +229,7 @@ class Calculadora extends Component {
             </div>
           </form>
         </div>
-        <TablaLogs Operaciones={this.state.operaciones}/>
+        <TablaLogs Operaciones={this.state.operaciones} />
       </div>
     );
   }

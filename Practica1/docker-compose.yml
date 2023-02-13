@@ -13,7 +13,7 @@ services:
     volumes:
       - ./DBCalculadora/operaciones:/var/lib/mysql
     networks:
-      - practica1-so1
+      - so1
     ports:
       - "3307:3306"
     
@@ -26,10 +26,26 @@ services:
       - "8080:8080"
     expose:
       - "8080"
+    volumes:
+      - reporte:/usr/src/app/Reporte
     networks:
-      - practica1-so1
+      - so1
     depends_on:
       - calcudb
+  
+  calcubash:
+    build:
+      context: ./BashCalculadora
+      dockerfile: Dockerfile
+    container_name: bash
+    depends_on:
+      - calcugo
+    networks:
+      - so1
+    volumes:
+      - reporte:/app
+    restart: on-failure
+    command: ["sleep","infinity"]
   
   calcureact:
     build:
@@ -39,13 +55,14 @@ services:
     ports:
       - "3000:3000"
     networks:
-      - practica1-so1
+      - so1
     depends_on:
       - calcudb
       - calcugo
 
 volumes:
-  operaciones: {}
+  operaciones: 
+  reporte:
 
 networks:
-  practica1-so1:
+  so1:
