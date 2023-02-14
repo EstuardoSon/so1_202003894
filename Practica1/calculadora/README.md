@@ -1,4 +1,4 @@
-# Sobre la Aplicacion
+# REACT
 La aplicacion fue desarrollada en nodejs para inicializar la aplicacion debe ejecutar el comando "npm install"
 
 ## Components
@@ -9,7 +9,7 @@ Es el componente principal de la aplicacion en el cual se rederizara el componen
 Conformado por el componente TablaLogs.js, este componente contiene el formulario con los botones y el input/text el cual contendra la operacion y el resultado de la operacion que se realizara.
 El boton con el simbolo "=" contiene la accion de enviar los datos al backend por medio de un request http POST dentro de una funcion llamada **calcular**. 
 
-~~~
+```
 calcular = (e) => {
     e.preventDefault();
 
@@ -30,12 +30,12 @@ calcular = (e) => {
         this.mostrarLogs();
       });
   };
-~~~
+```
 Esta solicitud POST retorna un texto json con que contiene el resultado de la operacion que se mostrara posteriormente en el input/text.
 
 Si se es atento se podra notar que la funcion calcular contiene la ejecucion de la funcion **mostrarlogs**. Esta funcion es la encargada de realizar el request http GET para obtener los datos almacenados de ejecuciones anteriores.
 
-~~~
+```
 mostrarLogs = () => {
     Axios.get("http://localhost:8080/")
       .then((response) => {
@@ -47,7 +47,7 @@ mostrarLogs = () => {
         console.log(error);
       });
     };
-~~~
+```
 
 ## Calculadora
 En este componente se crea una tabla que incrementara su numero de filas y columnas correpondientemente con el numero de operaciones retornadas por la solicitud GET anteriormente mencionada.
