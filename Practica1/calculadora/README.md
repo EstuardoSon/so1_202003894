@@ -31,6 +31,7 @@ calcular = (e) => {
       });
   };
 ```
+
 Esta solicitud POST retorna un texto json con que contiene el resultado de la operacion que se mostrara posteriormente en el input/text.
 
 Si se es atento se podra notar que la funcion calcular contiene la ejecucion de la funcion **mostrarlogs**. Esta funcion es la encargada de realizar el request http GET para obtener los datos almacenados de ejecuciones anteriores.
@@ -49,7 +50,9 @@ mostrarLogs = () => {
     };
 ```
 
-## Calculadora
+El resultado se de la solicitud se almacena en el state operaciones para posteriormente mostrarse en el componente TablaLogs.
+
+## TablaLogs
 En este componente se crea una tabla que incrementara su numero de filas y columnas correpondientemente con el numero de operaciones retornadas por la solicitud GET anteriormente mencionada.
 
 ---
@@ -74,3 +77,14 @@ EXPOSE 3000
 
 CMD ["npm", "start"]
 ~~~
+
+- La imagen utilizada para este componete es de node:18-alpine
+- Se establece la direccion en la que se trabajara con WORKDIR
+- Se establece el entorno y la direccion donde se instalaran los modulos con ENV
+- Se copia el contenido de package.json
+- Se copia el contenido de package-lock.json
+- Se ejecuta npm install dentro del contenedor
+- Se ejecuta npm install react-scripts dentro del contenedor
+- Se copian los archivos que conforman el frontend en la ruta /app dentro del contenedor 
+- Se expone expone el puerto 3000 en donde correspondiente del contenedor
+- se ejecuta el comando npm start para iniciar el frontend dentro del contenedor

@@ -3,22 +3,22 @@ Para el manejo de los reportes en consola fue necesaria la creacion de un script
 
 ```
 #!/usr/bin/sh
-patron=`wc -l < /app/Reporte.txt`
-echo "Logs realizados: $patron" > /tmp/consulta.log
-patron=`cat /app/Reporte.txt | grep -c Error`
-echo "Cant. Errores: $patron" >> /tmp/consulta.log
-patron=`cat /app/Reporte.txt | grep -v Error | grep -c " + "`
-echo "Cant. Suma: $patron" >> /tmp/consulta.log
-patron=`cat /app/Reporte.txt | grep -v Error | grep -c " - "`
-echo "Cant. Resta: $patron" >> /tmp/consulta.log
-patron=`cat /app/Reporte.txt| grep -v Error | grep -c " \* "`
-echo "Cant. Mult: $patron" >> /tmp/consulta.log
-patron=`cat /app/Reporte.txt| grep -v Error | grep -c " / "`
-echo "Cant. Div: $patron" >> /tmp/consulta.log
-fecha=`date +%F`
-patron=`cat /app/Reporte.txt | grep "$fecha"`
-echo "\nLogs de $fecha \n$patron" >> /tmp/consulta.log
-cat /tmp/consulta.log
+patron=`wc -l < /app/Reporte.txt` #Lectura del numero de lineas del archivo Reporte.txt
+echo "Logs realizados: $patron" > /tmp/consulta.log #Almacenar el resultado del echo en consulta.log
+patron=`cat /app/Reporte.txt | grep -c Error` #Contar el numero de errores
+echo "Cant. Errores: $patron" >> /tmp/consulta.log #Almacenar el resultado del echo en consulta.log
+patron=`cat /app/Reporte.txt | grep -v Error | grep -c " + "` #Contar el numero de sumas
+echo "Cant. Suma: $patron" >> /tmp/consulta.log #Almacenar el resultado del echo en consulta.log
+patron=`cat /app/Reporte.txt | grep -v Error | grep -c " - "` #Contar el numero de restas
+echo "Cant. Resta: $patron" >> /tmp/consulta.log #Almacenar el resultado del echo en consulta.log
+patron=`cat /app/Reporte.txt| grep -v Error | grep -c " \* "` #Contar el numero de multiplicaciones
+echo "Cant. Mult: $patron" >> /tmp/consulta.log #Almacenar el resultado del echo en consulta.log
+patron=`cat /app/Reporte.txt| grep -v Error | grep -c " / "` #Contar el numero de divisiones
+echo "Cant. Div: $patron" >> /tmp/consulta.log #Almacenar el resultado del echo en consulta.log
+fecha=`date +%F` #Obtener la fecha
+patron=`cat /app/Reporte.txt | grep "$fecha"` #Leer el contenido de Reporte.txt y obtener las lineas que coincidan con el grep
+echo "\nLogs de $fecha \n$patron" >> /tmp/consulta.log #Almacenar el resultado del echo en consulta.log
+cat /tmp/consulta.log #Mostrar en pantalla el contenido de consulta.log
 ```
 
 La primera linea de codigo nos indicara a la consola con que tipo de shell esta programado el script.
