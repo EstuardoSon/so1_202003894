@@ -78,7 +78,7 @@ EXPOSE 3000
 CMD ["npm", "start"]
 ~~~
 
-- La imagen utilizada para este componete es de node:18-alpine
+- La imagen utilizada para este contenedor es de node:18-alpine
 - Se establece la direccion en la que se trabajara con WORKDIR
 - Se establece el entorno y la direccion donde se instalaran los modulos con ENV
 - Se copia el contenido de package.json

@@ -48,4 +48,9 @@ RUN echo "* * * * * root /root/Script.sh > /proc/1/fd/1 2>/proc/1/fd/2" >> /etc/
 
 ENTRYPOINT [ "cron", "-f" ]
 ```
-
+- La imagen utilizada para el contenedor es ubuntu:20.04
+- Se agrega dentro del contenedor el script Script.sh en la ruta /root/Script.sh dentro del contenedor
+- Se cambian los permisos del archivo dentro del contenedor a 0744
+- Se ejecuta la instalacion de cron dentro del contenedor
+- Se agrega un nuevo cron job al contenedor
+- Se establece un punto de entrada del cron para visualizar su resultado
