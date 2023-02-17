@@ -8,7 +8,7 @@ package main
 #Se importan las dependencias
 import (
 	"context"
-	"database/sql"
+	"database/sql" #Driver para realizar la conexion entre mysql y go
 	"net/http"
 
 	"github.com/EstuardoSon/server"
@@ -69,7 +69,7 @@ package server
 #Se importan las dependencias
 import (
 	"context"
-	"database/sql"
+	"database/sql" #Driver para realizar la conexion entre mysql y go
 	"encoding/json"
 	"fmt"
 	"net/http"

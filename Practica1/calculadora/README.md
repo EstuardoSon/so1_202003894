@@ -13,7 +13,7 @@ El boton con el simbolo "=" contiene la accion de enviar los datos al backend po
 calcular = (e) => {
     e.preventDefault();
 
-    fetch("http://localhost:8080/", {
+    fetch("http://0.0.0.0:8080/", {
       method: "POST",
       headers: {
         Accept: "application/json, text/plain, */*",
@@ -38,7 +38,7 @@ Si se es atento se podra notar que la funcion calcular contiene la ejecucion de 
 
 ```
 mostrarLogs = () => {
-    Axios.get("http://localhost:8080/")
+    Axios.get("http://0.0.0.0:8080/")
       .then((response) => {
         this.setState({
           operaciones: response.data,
@@ -64,18 +64,18 @@ FROM node:18-alpine as frontend
 
 WORKDIR /app
 
-ENV PATH /app/node_modules/.bin:$PATH
-
 COPY package.json ./
 COPY package-lock.json ./
 RUN npm install --silent
-RUN npm install react-scripts -g --silent
 
 COPY . ./
 
-EXPOSE 3000
+RUN npm run build
 
-CMD ["npm", "start"]
+FROM nginx:1.22.1 as runner
+COPY --from=frontend /app/build /usr/share/nginx/html
+
+EXPOSE 80
 ~~~
 
 - La imagen utilizada para este contenedor es de node:18-alpine
@@ -86,5 +86,7 @@ CMD ["npm", "start"]
 - Se ejecuta npm install dentro del contenedor
 - Se ejecuta npm install react-scripts dentro del contenedor
 - Se copian los archivos que conforman el frontend en la ruta /app dentro del contenedor 
-- Se expone expone el puerto 3000 en donde correspondiente del contenedor
-- se ejecuta el comando npm start para iniciar el frontend dentro del contenedor
+- Se procede a la compilacion del proyecto react
+- Se crea una imagen con nginx
+- Se copia la ruta en donde se creo la compilacion del proyecto de react dentro de la carpeta /usr/share/nginx/html de la nueva imagen
+- Se expone el puerto 80

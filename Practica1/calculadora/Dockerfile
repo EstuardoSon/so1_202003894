@@ -3,15 +3,15 @@ FROM node:18-alpine as frontend
 
 WORKDIR /app
 
-ENV PATH /app/node_modules/.bin:$PATH
-
 COPY package.json ./
 COPY package-lock.json ./
 RUN npm install --silent
-RUN npm install react-scripts -g --silent
 
 COPY . ./
 
-EXPOSE 3000
+RUN npm run build
 
-CMD ["npm", "start"]
+FROM nginx:1.22.1 as runner
+COPY --from=frontend /app/build /usr/share/nginx/html
+
+EXPOSE 80
