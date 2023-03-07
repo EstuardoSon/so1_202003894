@@ -1,0 +1,1 @@
+cmd_/home/estuardo/so1_202003894/Practica2/Modulo/cpu_202003894.ko := ld -r  -m elf_x86_64 -z noexecstack   --build-id=sha1  -T scripts/module.lds -o /home/estuardo/so1_202003894/Practica2/Modulo/cpu_202003894.ko /home/estuardo/so1_202003894/Practica2/Modulo/cpu_202003894.o /home/estuardo/so1_202003894/Practica2/Modulo/cpu_202003894.mod.o;  true

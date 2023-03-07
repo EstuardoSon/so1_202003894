@@ -1,0 +1,97 @@
+//Librerias para creacion del modulo
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/init.h>
+#include <linux/proc_fs.h>
+#include <asm/uaccess.h>
+#include <linux/seq_file.h>
+
+//Librerias de para el funcionamiento del modulo
+#include <linux/sched.h>
+#include <linux/sched/signal.h>
+
+MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("Modulo CPU Practica 2");
+MODULE_AUTHOR("Estuardo Gabriel Son Mux");
+
+static int escribir_archivo(struct seq_file *archivo, void *v)
+{
+    //Recorrer procesos y sus hijos
+    struct task_struct *task =current;
+    struct task_struct *child;
+    //struct mm_struct *ram;
+
+    //Calcular porcentaje de CPU utilizado
+    unsigned long long totalCPU = 0;
+    unsigned int porcentajeCPU = 0;
+    //unsigned long duracionJiffy = 1 / HZ;
+    //unsigned long totalJiffies = jiffies * duracionJiffy;
+
+    //Cantidad de procesos en cada estado
+    int prunning = 0, pzombie = 0, pstopped = 0, psleeping = 0, ptotal = 0;
+
+    //Porcentaje de RAM usado por proceso
+    //unsigned long totalRam, usadoRam;
+    //int porcentajeRam;
+
+    seq_printf(archivo,"{\n\"Procesos\":[\n");
+    for_each_process(task){
+      totalCPU += task->utime + task->stime;
+
+      seq_printf(archivo,"{\"pid\":%d,\"nombre\":\"%s\",\"usuario\":%d,\"estado\":%i, \"ram\":0, \"threads\":[\n",task->pid,task->comm,(task->cred)->uid.val,task->__state);
+      
+
+      for_each_thread(task, child) {
+        seq_printf(archivo,"{\"pid\":%d,\"nombre\":\"%s\"},\n",child->pid,child->comm);
+      }
+      seq_printf(archivo,"]\n},\n");
+
+      if(task->__state == TASK_RUNNING){
+                prunning += 1;
+      }
+      else if(task->__state == __TASK_STOPPED){
+        pstopped += 1;
+      }
+      else if(task->exit_state == EXIT_ZOMBIE){
+        pzombie += 1;
+      }
+      else if(task->__state == TASK_INTERRUPTIBLE){
+        psleeping += 1;
+      }
+
+      ptotal += 1;
+    }
+    seq_printf(archivo,"],\n\"General\":[\n{ \"texto\": \"Proceso en Ejecucion\", \"valor\": %d },\n{ \"texto\": \"Proceso Suspendidos\", \"valor\": %d },\n{ \"texto\": \"Proceso Detenidos\", \"valor\": %d },\n{ \"texto\": \"Proceso Zombie\", \"valor\": %d },\n{ \"texto\": \"Total de Procesos\", \"valor\": %d }\n],\n",prunning,psleeping,pstopped,pzombie,ptotal);
+    
+    porcentajeCPU = totalCPU*1;
+
+    seq_printf(archivo,"\"CPU\":%d\n}\n",porcentajeCPU);
+    return 0;
+}
+
+static int al_abrir(struct inode *inode, struct file *file)
+{
+    return single_open(file, escribir_archivo, NULL);
+}
+
+static struct proc_ops operaciones =
+{
+    .proc_open = al_abrir,
+    .proc_read = seq_read
+};
+
+static int _insert(void)
+{
+    proc_create("cpu_202003894", 0, NULL, &operaciones);
+    printk(KERN_INFO "Estuardo Gabriel Son Mux\n");
+    return 0;
+}
+
+static void _remove(void)
+{
+    remove_proc_entry("cpu_202003894", NULL);
+    printk(KERN_INFO "Primer Semestre 2023\n");
+}
+
+module_init(_insert);
+module_exit(_remove);

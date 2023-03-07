@@ -7,7 +7,7 @@ class GraficaCPU extends Component {
   render() {
     return (
       <div className="p-3 col-md-6">
-        <h3>{this.props.nombre}</h3>
+        <h4>{this.props.nombre}</h4>
         <Doughnut data={this.props.dataPie} />
       </div>
     );

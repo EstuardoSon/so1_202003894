@@ -1,33 +1,64 @@
 import React, { Component } from "react";
 
 class TablaProcesos extends Component {
-  state = {};
+  state = {
+    pid: 0,
+  };
+
+  handleProcessClick = (pid) => {
+    if(this.state.pid == pid){
+      this.setState({
+        pid :-1 
+      });
+    }
+    else{
+      this.setState({
+        pid 
+      });
+    }
+  };
+
   render() {
     return (
-      <table className="table table-hover">
-        <thead>
-          <tr>
-            <th scope="col">PID</th>
-            <th scope="col">NOMBRE</th>
-            <th scope="col">USUARIO</th>
-            <th scope="col">ESTADO</th>
-            <th scope="col">%RAM</th>
-          </tr>
-        </thead>
-        <tbody>
-          {this.props.data.length
-            ? this.props.data.map((proceso) => (
-                <tr key={proceso.numero}>
-                  <td>{proceso.pid}</td>
-                  <td>{proceso.nombre}</td>
-                  <td>{proceso.usuario}</td>
-                  <td>{proceso.estado}</td>
-                  <td>{proceso.ram}</td>
-                </tr>
-              ))
-            : null}
-        </tbody>
-      </table>
+      <ul className="nav nav-pills flex-column">
+        {this.props.data.length
+          ? this.props.data.map((proceso) => (
+              <li key={proceso.pid} className="nav-item dropdown">
+                <p
+                  className="nav-link dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  role="button"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  onClick={() => this.handleProcessClick(proceso.pid)}
+                >
+                  PID: {proceso.pid} Nombre: {proceso.nombre} Usuario:{" "}
+                  {proceso.usuario} Estado: {proceso.estado} %RAM:{proceso.ram}
+                </p>
+                {this.state.pid === proceso.pid && (
+                  <div
+                    className="dropdown-menu show"
+                    style={{
+                      position: "absolute",
+                      top: "0px",
+                      left: "25%",
+                      margin: "0px",
+                      transform: "translate(0px, 42px)",
+                    }}
+                    data-popper-placement="bottom-start"
+                  >
+                    {
+                      proceso.threads
+                      ? proceso.threads.map((thread) => (
+                        <p className="dropdown-item">PID{thread.pid}  Nombre: {thread.nombre}</p>
+                      )):null
+                    }
+                  </div>
+                )}
+              </li>
+            ))
+          : null}
+      </ul>
     );
   }
 }

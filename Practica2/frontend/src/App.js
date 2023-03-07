@@ -3,6 +3,7 @@ import "./App.css";
 import GraficaPie from "./Components/GraficaPie";
 import TablaProcesos from "./Components/TablaProcesos";
 import TablaIG from "./Components/TablaIG";
+import json from "./json";
 
 function App() {
   const [dataCPU] = useState({
@@ -31,7 +32,7 @@ function App() {
     <div className="App">
       <div>
         <h3>Estuardo Gabriel Son Mux</h3>
-        <p class="text-muted">202003894</p>
+        <p className="text-muted">202003894</p>
       </div>
       <div className="row m-4">
         <div className="col-md-3"></div>
@@ -63,7 +64,7 @@ function App() {
           className="col-md-6 m-2 rounded border border-dark table-responsive"
           style={{ backgroundColor: "#1b1b1f" }}
         >
-          <TablaProcesos data={{}} />
+          <TablaProcesos data={json.Procesos} />
         </div>
       </div>
     </div>
