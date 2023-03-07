@@ -50,7 +50,7 @@ class TablaProcesos extends Component {
                     {
                       proceso.threads
                       ? proceso.threads.map((thread) => (
-                        <p className="dropdown-item">PID{thread.pid}  Nombre: {thread.nombre}</p>
+                        <p className="dropdown-item">PID: {thread.tpid}  Nombre: {thread.nombre}</p>
                       )):null
                     }
                   </div>

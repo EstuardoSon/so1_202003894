@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  
+  monitorreact:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:80"
+    networks:
+      - so1
+
+networks:
+  so1:

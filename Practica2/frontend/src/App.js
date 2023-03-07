@@ -40,13 +40,7 @@ function App() {
           className="col-md-2 m-2 rounded border border-dark table-responsive"
           style={{ backgroundColor: "#1b1b1f" }}
         >
-          <TablaIG data={[
-            { texto: "Proceso en Ejecucion", valor: 0 },
-            { texto: "Proceso Suspendidos", valor: 1 },
-            { texto: "Proceso Detenidos", valor: 1 },
-            { texto: "Proceso Zombie", valor: 1 },
-            { texto: "Total de procesos", valor: 1 }
-            ]} />
+          <TablaIG data={json.General} />
         </div>
         <div
           className="col-md-4 m-2 rounded border border-dark"
