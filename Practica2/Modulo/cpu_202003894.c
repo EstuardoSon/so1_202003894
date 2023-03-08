@@ -22,13 +22,10 @@ static int escribir_archivo(struct seq_file *archivo, void *v)
     //struct mm_struct *ram;
 
     //Calcular porcentaje de CPU utilizado
-    unsigned long long totalCPU = 0;
+    unsigned int totalCPU = 0;
     unsigned int porcentajeCPU = 0;
     //unsigned long duracionJiffy = 1 / HZ;
     //unsigned long totalJiffies = jiffies * duracionJiffy;
-
-    //Cantidad de procesos en cada estado
-    int prunning = 0, pzombie = 0, pstopped = 0, psleeping = 0, ptotal = 0;
 
     //Porcentaje de RAM usado por proceso
     //unsigned long totalRam, usadoRam;
@@ -41,26 +38,20 @@ static int escribir_archivo(struct seq_file *archivo, void *v)
       seq_printf(archivo,"{\"Pid\":%d,\"Nombre\":\"%s\",\"Usuario\":%d,",task->pid,task->comm,(task->cred)->uid.val);
       
       if(task->__state == TASK_RUNNING){
-        prunning += 1;
         seq_printf(archivo,"\"Estado\":\"RUNNING\", \"Ram\":0, ");
       }
       else if(task->__state == __TASK_STOPPED || task->__state == __TASK_TRACED || task->__state == TASK_WAKEKILL){
-        pstopped += 1;
         seq_printf(archivo,"\"Estado\":\"STOPPED\", \"Ram\":0, ");
       }
       else if(task->exit_state == EXIT_ZOMBIE || task->__state == TASK_DEAD){
-        pzombie += 1;
         seq_printf(archivo,"\"Estado\":\"ZOMBIE\", \"Ram\":0, ");
       }
       else if(task->__state == TASK_INTERRUPTIBLE || task->__state == TASK_UNINTERRUPTIBLE){
-        psleeping += 1;
-        seq_printf(archivo,"\"Rstado\":\"SLEEPING\", \"Ram\":0, ");
+        seq_printf(archivo,"\"Estado\":\"SLEEPING\", \"Ram\":0, ");
       }
       else{
         seq_printf(archivo,"\"Estado\":\"OTRO\", \"Ram\":0, ");
       }
-
-      ptotal += 1;
 
       seq_printf(archivo,"\"Threads\":[\n");
 
@@ -69,7 +60,7 @@ static int escribir_archivo(struct seq_file *archivo, void *v)
       }
       seq_printf(archivo,"]\n},\n");
     }
-    seq_printf(archivo,"],\n\"General\":[\n{ \"Texto\": \"Proceso en Ejecucion\", \"Valor\": %d },\n{ \"Texto\": \"Proceso Suspendidos\", \"Valor\": %d },\n{ \"Texto\": \"Proceso Detenidos\", \"Valor\": %d },\n{ \"Texto\": \"Proceso Zombie\", \"Valor\": %d },\n{ \"Texto\": \"Total de Procesos\", \"Valor\": %d }\n],\n",prunning,psleeping,pstopped,pzombie,ptotal);
+    seq_printf(archivo,"],\n");
     
     porcentajeCPU = totalCPU*1;
 

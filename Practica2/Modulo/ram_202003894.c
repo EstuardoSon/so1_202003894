@@ -25,7 +25,7 @@ static int escribir_archivo(struct seq_file *archivo, void *v)
     ramUsada = totalRAM - ramLibre;
 
     porcentaje = (ramUsada*100) / totalRAM;
-    seq_printf(archivo,"{\"ram\":%d}", porcentaje);
+    seq_printf(archivo,"{\"Ram\":%d}", porcentaje);
     return 0;
 }
 
