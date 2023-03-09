@@ -9,6 +9,7 @@
 //Librerias de para el funcionamiento del modulo
 #include <linux/sched.h>
 #include <linux/sched/signal.h>
+#include <linux/mm.h>
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Modulo CPU Practica 2");
@@ -24,12 +25,12 @@ static int escribir_archivo(struct seq_file *archivo, void *v)
     //Calcular porcentaje de CPU utilizado
     unsigned int totalCPU = 0;
     unsigned int porcentajeCPU = 0;
+    
     //unsigned long duracionJiffy = 1 / HZ;
     //unsigned long totalJiffies = jiffies * duracionJiffy;
 
     //Porcentaje de RAM usado por proceso
-    //unsigned long totalRam, usadoRam;
-    //int porcentajeRam;
+    unsigned int ram = 0;
 
     seq_printf(archivo,"{\n\"Procesos\":[\n");
     for_each_process(task){
@@ -38,22 +39,28 @@ static int escribir_archivo(struct seq_file *archivo, void *v)
       seq_printf(archivo,"{\"Pid\":%d,\"Nombre\":\"%s\",\"Usuario\":%d,",task->pid,task->comm,(task->cred)->uid.val);
       
       if(task->__state == TASK_RUNNING){
-        seq_printf(archivo,"\"Estado\":\"RUNNING\", \"Ram\":0, ");
+        seq_printf(archivo,"\"Estado\":\"RUNNING\"");
       }
       else if(task->__state == __TASK_STOPPED || task->__state == __TASK_TRACED || task->__state == TASK_WAKEKILL){
-        seq_printf(archivo,"\"Estado\":\"STOPPED\", \"Ram\":0, ");
+        seq_printf(archivo,"\"Estado\":\"STOPPED\"");
       }
       else if(task->exit_state == EXIT_ZOMBIE || task->__state == TASK_DEAD){
-        seq_printf(archivo,"\"Estado\":\"ZOMBIE\", \"Ram\":0, ");
+        seq_printf(archivo,"\"Estado\":\"ZOMBIE\"");
       }
       else if(task->__state == TASK_INTERRUPTIBLE || task->__state == TASK_UNINTERRUPTIBLE){
-        seq_printf(archivo,"\"Estado\":\"SLEEPING\", \"Ram\":0, ");
+        seq_printf(archivo,"\"Estado\":\"SLEEPING\"");
       }
       else{
-        seq_printf(archivo,"\"Estado\":\"OTRO\", \"Ram\":0, ");
+        seq_printf(archivo,"\"Estado\":\"OTRO\"");
       }
 
-      seq_printf(archivo,"\"Threads\":[\n");
+      if(task->mm){
+        ram = (get_mm_rss(task->mm)<<PAGE_SHIFT)/(1024*1024);
+        seq_printf(archivo,", \"Ram\":%d, \"Threads\":[\n",ram);
+      }
+      else{
+        seq_printf(archivo,", \"Ram\":0, \"Threads\":[\n");
+      }
 
       for_each_thread(task, child) {
         seq_printf(archivo,"{\"Pid\":%d,\"Tpid\":%d,\"Nombre\":\"%s\"},\n",task->pid,child->pid,child->comm);

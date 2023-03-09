@@ -5,7 +5,7 @@ Use Monitor;
 Create table if not exists Proceso(
     Pid int primary key,
     Nombre varchar(200),
-    Usuario int,
+    Usuario varchar(200),
     Estado varchar(50),
     Ram int
 );
@@ -49,7 +49,7 @@ create procedure getProcess()
     end;
 
 drop procedure if exists setProcess;
-create procedure setProcess(in Pid int, in Nombre varchar(200), in Usuario int, in Estado varchar(50), in Ram int)
+create procedure setProcess(in Pid int, in Nombre varchar(200), in Usuario varchar(200), in Estado varchar(50), in Ram int)
     begin
         insert into Proceso values (Pid,Nombre,Usuario,Estado,Ram);
     end;

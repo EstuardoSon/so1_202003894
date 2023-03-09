@@ -38,7 +38,7 @@ app.get("/", async (req, res) => {
     const result3 = await connection.query(`call getProcess();`);
     
     for (let proceso of result3[0]){
-        json += `{"Pid":${proceso.Pid}, "Nombre":"${proceso.Nombre}", "Estado":"${proceso.Estado}", "Usuario":${proceso.Usuario}, "Ram":${proceso.Ram},"Threads":[\n`
+        json += `{"Pid":${proceso.Pid}, "Nombre":"${proceso.Nombre}", "Estado":"${proceso.Estado}", "Usuario":"${proceso.Usuario}", "Ram":${proceso.Ram},"Threads":[\n`
         await connection.query(`call getThreads(${proceso.Pid});`).then((res) => {
             for (let thread of res[0]){
                 json += `{"Pid":${thread.Pid}, "Tpid":"${thread.Tpid}", "Nombre":"${thread.Nombre}"},\n`

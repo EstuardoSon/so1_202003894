@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os/exec"
+	"os/user"
 	"strings"
 	"time"
 
@@ -37,7 +38,7 @@ type Thread struct {
 type Proceso struct {
 	Pid     int
 	Nombre  string
-	Usuario int
+	Usuario uint32
 	Estado  string
 	Ram     int
 	Threads []Thread
@@ -65,9 +66,13 @@ func queryVaciar(ctx context.Context, db *sql.DB) error {
 }
 
 func queryIngresarProceso(p Proceso, ctx context.Context, db *sql.DB) error {
+	u, err := user.LookupId(fmt.Sprint(p.Usuario))
+	if err != nil {
+		panic(err)
+	}
 	qry := `call setProcess(?,?,?,?,?);`
 
-	_, err := db.ExecContext(ctx, qry, p.Pid, p.Nombre, p.Usuario, p.Estado, p.Ram)
+	_, err = db.ExecContext(ctx, qry, p.Pid, p.Nombre, u.Username, p.Estado, p.Ram)
 
 	if err != nil {
 		return err
@@ -128,7 +133,7 @@ func main() {
 		cmd = exec.Command("sh", "-c", "cat /proc/cpu_202003894")
 		out, err = cmd.CombinedOutput()
 		if err != nil {
-			fmt.Println(err)
+			panic(err)
 		}
 
 		var moduloCPU MonitorCPU
