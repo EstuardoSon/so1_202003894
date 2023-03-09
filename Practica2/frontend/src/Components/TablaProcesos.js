@@ -6,14 +6,13 @@ class TablaProcesos extends Component {
   };
 
   handleProcessClick = (pid) => {
-    if(this.state.pid == pid){
+    if (this.state.pid == pid) {
       this.setState({
-        pid :-1 
+        pid: -1,
       });
-    }
-    else{
+    } else {
       this.setState({
-        pid 
+        pid,
       });
     }
   };
@@ -23,19 +22,19 @@ class TablaProcesos extends Component {
       <ul className="nav nav-pills flex-column">
         {this.props.data.length
           ? this.props.data.map((proceso) => (
-              <li key={proceso.pid} className="nav-item dropdown">
+              <li key={proceso.Pid} className="nav-item dropdown">
                 <p
                   className="nav-link dropdown-toggle"
                   data-bs-toggle="dropdown"
                   role="button"
                   aria-haspopup="true"
                   aria-expanded="false"
-                  onClick={() => this.handleProcessClick(proceso.pid)}
+                  onClick={() => this.handleProcessClick(proceso.Pid)}
                 >
-                  PID: {proceso.pid} Nombre: {proceso.nombre} Usuario:{" "}
-                  {proceso.usuario} Estado: {proceso.estado} %RAM:{proceso.ram}
+                  PID: {proceso.Pid} Nombre: {proceso.Nombre} Usuario:{" "}
+                  {proceso.Usuario} Estado: {proceso.Estado} %RAM:{proceso.Ram}
                 </p>
-                {this.state.pid === proceso.pid && (
+                {this.state.pid === proceso.Pid && (
                   <div
                     className="dropdown-menu show"
                     style={{
@@ -47,12 +46,13 @@ class TablaProcesos extends Component {
                     }}
                     data-popper-placement="bottom-start"
                   >
-                    {
-                      proceso.threads
-                      ? proceso.threads.map((thread) => (
-                        <p className="dropdown-item">PID: {thread.tpid}  Nombre: {thread.nombre}</p>
-                      )):null
-                    }
+                    {proceso.Threads
+                      ? proceso.Threads.map((thread) => (
+                          <p className="dropdown-item">
+                            PID: {thread.Tpid} Nombre: {thread.Nombre}
+                          </p>
+                        ))
+                      : null}
                   </div>
                 )}
               </li>

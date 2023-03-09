@@ -1,32 +1,85 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import GraficaPie from "./Components/GraficaPie";
 import TablaProcesos from "./Components/TablaProcesos";
 import TablaIG from "./Components/TablaIG";
-import json from "./json";
 
 function App() {
-  const [dataCPU] = useState({
+  const [tablas, setTablas] = useState({
+    General: [
+      { texto: "Proceso en Ejecucion", valor: 0 },
+      { texto: "Proceso Suspendidos", valor: 0 },
+      { texto: "Proceso Detenidos", valor: 0 },
+      { texto: "Proceso Zombie", valor: 0 },
+      { texto: "Total de Procesos", valor: 0 },
+    ],
+    Procesos: [],
+  });
+
+  const [dataCPU, setCPU] = useState({
     labels: ["Usado", "No Usado"],
     datasets: [
       {
         label: "Grafica CPU",
-        data: [33.33, 25],
+        data: [0, 100],
         backgroundColor: ["rgb(27,57,157)", "rgb(66,70,79)"],
       },
     ],
   });
 
-  const [dataRAM] = useState({
+  const [dataRAM, setRam] = useState({
     labels: ["Usado", "No Usado"],
     datasets: [
       {
         label: "Grafica CPU",
-        data: [75, 25],
+        data: [0, 100],
         backgroundColor: ["rgb(27,57,157)", "rgb(66,70,79)"],
       },
     ],
   });
+
+  useEffect(() => {
+    const metodoGET = setInterval(() => {
+      fetch("http://localhost:3001/")
+        .then((res) => {
+          return res.json();
+        })
+        .then((res) => {
+          console.log(res);
+          setTablas({
+            General: [
+              { texto: "Proceso en Ejecucion", valor: res.General.RUNNING },
+              { texto: "Proceso Suspendidos", valor: res.General.SLEEPING },
+              { texto: "Proceso Detenidos", valor: res.General.STOPPED },
+              { texto: "Proceso Zombie", valor: res.General.ZOMBIE },
+              { texto: "Total de Procesos", valor: res.General.TOTAL },
+            ],
+            Procesos: res.Procesos,
+          });
+          setCPU({
+            labels: ["Usado", "No Usado"],
+            datasets: [
+              {
+                label: "Grafica CPU",
+                data: [res.General.CPU, 100 - res.General.CPU],
+                backgroundColor: ["rgb(27,57,157)", "rgb(66,70,79)"],
+              },
+            ],
+          });
+          setRam({
+            labels: ["Usado", "No Usado"],
+            datasets: [
+              {
+                label: "Grafica RAM",
+                data: [res.General.RAM, 100 - res.General.RAM],
+                backgroundColor: ["rgb(27,57,157)", "rgb(66,70,79)"],
+              },
+            ],
+          });
+        });
+    }, 10000);
+    return () => clearInterval(metodoGET);
+  }, []);
 
   return (
     <div className="App">
@@ -40,7 +93,7 @@ function App() {
           className="col-md-2 m-2 rounded border border-dark table-responsive"
           style={{ backgroundColor: "#1b1b1f" }}
         >
-          <TablaIG data={json.General} />
+          <TablaIG data={tablas.General} />
         </div>
         <div
           className="col-md-4 m-2 rounded border border-dark"
@@ -58,7 +111,7 @@ function App() {
           className="col-md-6 m-2 rounded border border-dark table-responsive"
           style={{ backgroundColor: "#1b1b1f" }}
         >
-          <TablaProcesos data={json.Procesos} />
+          <TablaProcesos data={tablas.Procesos} />
         </div>
       </div>
     </div>

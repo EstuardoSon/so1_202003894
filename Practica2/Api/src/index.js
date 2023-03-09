@@ -1,10 +1,12 @@
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
+const cors = require('cors')
 const { getConnection } = require("./database/database");
 
 app.set("port", 3001);
 
+app.use(cors())
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -27,6 +29,8 @@ app.get("/", async (req, res) => {
     json += `"STOPPED":${result2[0].STOPPED},\n`
     json += `"SLEEPING":${result2[0].SLEEPING},\n`
     json += `"ZOMBIE":${result2[0].ZOMBIE},\n`
+    json += `"CPU":${result2[0].CPU},\n`
+    json += `"RAM":${result2[0].RAM},\n`
     json += `"TOTAL":${result2[0].TOTAL}\n`
     json += `},\n`
     json += `"Procesos":[\n`
@@ -34,7 +38,7 @@ app.get("/", async (req, res) => {
     const result3 = await connection.query(`call getProcess();`);
     
     for (let proceso of result3[0]){
-        json += `{"Pid":${proceso.Pid}, "Nombre":"${proceso.Nombre}", "Estado":"${proceso.Pid}", "Usuario":${proceso.Usuario}, "Ram":${proceso.Ram},"Threads":[\n`
+        json += `{"Pid":${proceso.Pid}, "Nombre":"${proceso.Nombre}", "Estado":"${proceso.Estado}", "Usuario":${proceso.Usuario}, "Ram":${proceso.Ram},"Threads":[\n`
         await connection.query(`call getThreads(${proceso.Pid});`).then((res) => {
             for (let thread of res[0]){
                 json += `{"Pid":${thread.Pid}, "Tpid":"${thread.Tpid}", "Nombre":"${thread.Nombre}"},\n`
