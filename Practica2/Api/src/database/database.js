@@ -1,5 +1,5 @@
-const mysql = require("promise-mysql");
-require('dotenv').config({path : './.env'});
+const mysql = require("mysql2");
+require('dotenv').config();
 
 const connection = mysql.createConnection({
     host: process.env.HOST,
@@ -9,7 +9,7 @@ const connection = mysql.createConnection({
 });
 
 const getConnection = () => {
-    return connection;
+    return connection.promise();
 }
 
 module.exports = {

@@ -13,15 +13,15 @@ app.use(express.json());
 
 app.get("/", async (req, res) => {
   try {
-    const connection = await getConnection();
+    const connection = getConnection();
     const result = await connection.query(
       `call General(@running,@sleeping,@stopped,@zombie,@total,@cpu,@ram);`
     );
-
+    
     let json = "{\n"
     json += `"General":{\n`
 
-    const result2 = await connection.query(
+    const [result2,fields] = await connection.query(
       `select @running as RUNNING,@sleeping as SLEEPING,@stopped as STOPPED,@zombie as ZOMBIE,@total as TOTAL,@cpu as CPU, @ram as RAM;`
     );
 
@@ -35,12 +35,12 @@ app.get("/", async (req, res) => {
     json += `},\n`
     json += `"Procesos":[\n`
 
-    const result3 = await connection.query(`call getProcess();`);
+    const [[result3,fields3],fields2] = await connection.query(`call getProcess();`);
     
-    for (let proceso of result3[0]){
+    for (let proceso of result3){
         json += `{"Pid":${proceso.Pid}, "Nombre":"${proceso.Nombre}", "Estado":"${proceso.Estado}", "Usuario":"${proceso.Usuario}", "Ram":${proceso.Ram},"Threads":[\n`
-        await connection.query(`call getThreads(${proceso.Pid});`).then((res) => {
-            for (let thread of res[0]){
+        await connection.query(`call getThreads(${proceso.Pid});`).then(([[res,fields3],fields2]) => {
+            for (let thread of res){
                 json += `{"Pid":${thread.Pid}, "Tpid":"${thread.Tpid}", "Nombre":"${thread.Nombre}"},\n`
             }        
         })

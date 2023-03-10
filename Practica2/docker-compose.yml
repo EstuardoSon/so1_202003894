@@ -1,5 +1,37 @@
 version: "3.9"
 services:
+  monitordb:
+    build:
+      context: ./Database
+      dockerfile: Dockerfile
+    container_name: database
+    environment:
+      MYSQL_ROOT_PASSWORD: 'password'
+      MYSQL_USER: 'estuardo'
+      MYSQL_PASSWORD: 'password'
+    networks:
+      - so1
+    ports:
+      - "3307:3306"
+
+  monitorapi:
+    restart: "on-failure"
+    build:
+      context: ./Api
+      dockerfile: Dockerfile
+    container_name: api
+    env_file: ./.env
+    environment:
+      HOST: database
+      USER_NAME: $USER_NAME
+      PASSWORD: $PASSWORD
+      DATABASE: $DATABASE
+    depends_on:
+      - monitordb
+    ports:
+      - "3001:3001" 
+    networks:
+      - so1
   
   monitorreact:
     build:
@@ -8,6 +40,8 @@ services:
     container_name: frontend
     ports:
       - "3000:80"
+    depends_on:
+      - monitorapi
     networks:
       - so1
 
