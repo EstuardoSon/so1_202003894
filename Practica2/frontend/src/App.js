@@ -77,7 +77,7 @@ function App() {
             ],
           });
         });
-    }, 10000);
+    }, 3000);
     return () => clearInterval(metodoGET);
   }, []);
 

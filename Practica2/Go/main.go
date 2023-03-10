@@ -14,7 +14,7 @@ import (
 )
 
 func conectDataBase() (*sql.DB, error) {
-	connectionString := "root:password@tcp(localhost:3306)/Monitor"
+	connectionString := "root:password@tcp(monitordb:3306)/Monitor"
 	db, err := sql.Open("mysql", connectionString)
 
 	if err != nil {
@@ -67,12 +67,15 @@ func queryVaciar(ctx context.Context, db *sql.DB) error {
 
 func queryIngresarProceso(p Proceso, ctx context.Context, db *sql.DB) error {
 	u, err := user.LookupId(fmt.Sprint(p.Usuario))
+	usuario := "Desconocido"
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+	} else {
+		usuario = u.Username
 	}
 	qry := `call setProcess(?,?,?,?,?);`
 
-	_, err = db.ExecContext(ctx, qry, p.Pid, p.Nombre, u.Username, p.Estado, p.Ram)
+	_, err = db.ExecContext(ctx, qry, p.Pid, p.Nombre, usuario, p.Estado, p.Ram)
 
 	if err != nil {
 		return err

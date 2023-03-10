@@ -4,25 +4,43 @@ services:
     build:
       context: ./Database
       dockerfile: Dockerfile
-    container_name: database
+    container_name: monitordb
     environment:
       MYSQL_ROOT_PASSWORD: 'password'
       MYSQL_USER: 'estuardo'
       MYSQL_PASSWORD: 'password'
     networks:
-      - so1
+      - so1_front
+      - so1_back
     ports:
       - "3307:3306"
+  
+  monitorgo:
+    build:
+      context: ./Go
+      dockerfile: Dockerfile
+    container_name: monitorgo
+    restart: "on-failure"
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+    networks:
+      - so1_back
+    depends_on:
+      - monitordb
+    volumes:
+      - /etc/passwd:/etc/passwd:ro
 
   monitorapi:
     restart: "on-failure"
     build:
       context: ./Api
       dockerfile: Dockerfile
-    container_name: api
+    container_name: monitorapi
     env_file: ./.env
     environment:
-      HOST: database
+      HOST: monitordb
       USER_NAME: $USER_NAME
       PASSWORD: $PASSWORD
       DATABASE: $DATABASE
@@ -31,19 +49,20 @@ services:
     ports:
       - "3001:3001" 
     networks:
-      - so1
+      - so1_front
   
   monitorreact:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: frontend
+    container_name: monitorreact
     ports:
       - "3000:80"
     depends_on:
       - monitorapi
     networks:
-      - so1
+      - so1_front
 
 networks:
-  so1:
+  so1_front:
+  so1_back:
