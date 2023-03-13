@@ -36,17 +36,19 @@ type Thread struct {
 }
 
 type Proceso struct {
-	Pid     int
-	Nombre  string
-	Usuario uint32
-	Estado  string
-	Ram     int
-	Threads []Thread
+	Pid      int
+	Nombre   string
+	Usuario  uint32
+	Estado   string
+	RamUsada int
+	RamTotal int
+	Threads  []Thread
 }
 
 type MonitorCPU struct {
-	Procesos []Proceso
-	CPU      int
+	Procesos  []Proceso
+	CPUUsuado int
+	CPUTotal  int
 }
 
 type Ram struct {
@@ -75,7 +77,7 @@ func queryIngresarProceso(p Proceso, ctx context.Context, db *sql.DB) error {
 	}
 	qry := `call setProcess(?,?,?,?,?);`
 
-	_, err = db.ExecContext(ctx, qry, p.Pid, p.Nombre, usuario, p.Estado, p.Ram)
+	_, err = db.ExecContext(ctx, qry, p.Pid, p.Nombre, usuario, p.Estado, (float64(p.RamUsada*100.0))/float64(p.RamTotal))
 
 	if err != nil {
 		return err
@@ -96,7 +98,7 @@ func queryIngresarThread(t Thread, ctx context.Context, db *sql.DB) error {
 	return nil
 }
 
-func queryIngresarRend(cpu int, ram int, ctx context.Context, db *sql.DB) error {
+func queryIngresarRend(cpu float64, ram int, ctx context.Context, db *sql.DB) error {
 	qry := `call setRendimiento(?,?);`
 
 	_, err := db.ExecContext(ctx, qry, cpu, ram)
@@ -155,7 +157,7 @@ func main() {
 			panic(err)
 		}
 
-		err = queryIngresarRend(moduloCPU.CPU, ram.Ram, ctx, db)
+		err = queryIngresarRend((float64(moduloCPU.CPUUsuado)*100.00)/float64(moduloCPU.CPUTotal), ram.Ram, ctx, db)
 		if err != nil {
 			panic(err)
 		}

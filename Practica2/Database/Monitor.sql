@@ -6,7 +6,7 @@ Create table if not exists Proceso(
     Nombre varchar(200),
     Usuario varchar(200),
     Estado varchar(50),
-    Ram int
+    Ram float
 );
 
 Create table if not exists Threads(
@@ -16,7 +16,7 @@ Create table if not exists Threads(
 );
 
 Create table if not exists Rendimiento(
-    Cpu int,
+    Cpu float,
     Ram int
 );
 
@@ -56,7 +56,7 @@ DELIMITER ;
 
 drop procedure if exists setProcess;
 DELIMITER &&
-create procedure setProcess(in Pid int, in Nombre varchar(200), in Usuario varchar(200), in Estado varchar(50), in Ram int)
+create procedure setProcess(in Pid int, in Nombre varchar(200), in Usuario varchar(200), in Estado varchar(50), in Ram float)
     begin
         insert into Proceso values (Pid,Nombre,Usuario,Estado,Ram);
     end&&
@@ -72,7 +72,7 @@ DELIMITER ;
 
 drop procedure if exists setRendimiento;
 DELIMITER &&
-create procedure setRendimiento(in cpu int, in ram int)
+create procedure setRendimiento(in cpu float, in ram int)
     begin
         insert into Rendimiento values (cpu, ram);
     end&&

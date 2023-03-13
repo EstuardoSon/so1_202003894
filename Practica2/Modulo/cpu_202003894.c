@@ -60,10 +60,10 @@ static int escribir_archivo(struct seq_file *archivo, void *v)
         pages = totalram_pages();
         ram = (get_mm_rss(task->mm)<<PAGE_SHIFT)/(1024*1024);
         totalRam = (pages << PAGE_SHIFT)/(1024*1024);
-        seq_printf(archivo,", \"Ram\":%d, \"Threads\":[\n",((ram * 100) / totalRam));
+        seq_printf(archivo,", \"RamUsada\":%d, \"RamTotal\":%d, \"Threads\":[\n",ram,totalRam);
       }
       else{
-        seq_printf(archivo,", \"Ram\":0, \"Threads\":[\n");
+        seq_printf(archivo,", \"RamUsada\":0, \"RamTotal\":%d, \"Threads\":[\n",totalRam);
       }
 
       for_each_thread(task, child) {
@@ -75,7 +75,7 @@ static int escribir_archivo(struct seq_file *archivo, void *v)
     
     totalTranscurrido = jiffies_to_clock_t(jiffies);
 
-    seq_printf(archivo,"\"CPU\":%ld\n%ld}\n%ld",((Ttranscurrido*100)/totalTranscurrido),totalTranscurrido,Ttranscurrido);
+    seq_printf(archivo,"\"CPUUsado\":%ld,\n\"CPUTotal\":%ld}\n",Ttranscurrido,totalTranscurrido);
     return 0;
 }
 
