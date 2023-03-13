@@ -5,11 +5,13 @@
 #include <linux/proc_fs.h>
 #include <asm/uaccess.h>
 #include <linux/seq_file.h>
+#include <linux/types.h>
 
 //Librerias de para el funcionamiento del modulo
 #include <linux/sched.h>
 #include <linux/sched/signal.h>
 #include <linux/mm.h>
+#include <linux/jiffies.h>
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Modulo CPU Practica 2");
@@ -23,18 +25,18 @@ static int escribir_archivo(struct seq_file *archivo, void *v)
     //struct mm_struct *ram;
 
     //Calcular porcentaje de CPU utilizado
-    unsigned int totalCPU = 0;
-    unsigned int porcentajeCPU = 0;
-    
-    //unsigned long duracionJiffy = 1 / HZ;
-    //unsigned long totalJiffies = jiffies * duracionJiffy;
+    ktime_t cputime;
+    unsigned long Ttranscurrido, totalTranscurrido;
 
     //Porcentaje de RAM usado por proceso
     unsigned int ram = 0;
+    int totalRam = 0;
+    unsigned long pages;
 
     seq_printf(archivo,"{\n\"Procesos\":[\n");
     for_each_process(task){
-      totalCPU += task->utime + task->stime;
+      cputime = task_cpu(task);
+      Ttranscurrido += jiffies_to_clock_t(cputime);
 
       seq_printf(archivo,"{\"Pid\":%d,\"Nombre\":\"%s\",\"Usuario\":%d,",task->pid,task->comm,(task->cred)->uid.val);
       
@@ -55,8 +57,10 @@ static int escribir_archivo(struct seq_file *archivo, void *v)
       }
 
       if(task->mm){
+        pages = totalram_pages();
         ram = (get_mm_rss(task->mm)<<PAGE_SHIFT)/(1024*1024);
-        seq_printf(archivo,", \"Ram\":%d, \"Threads\":[\n",ram);
+        totalRam = (pages << PAGE_SHIFT)/(1024*1024);
+        seq_printf(archivo,", \"Ram\":%d, \"Threads\":[\n",((ram * 100) / totalRam));
       }
       else{
         seq_printf(archivo,", \"Ram\":0, \"Threads\":[\n");
@@ -69,9 +73,9 @@ static int escribir_archivo(struct seq_file *archivo, void *v)
     }
     seq_printf(archivo,"],\n");
     
-    porcentajeCPU = totalCPU*1;
+    totalTranscurrido = jiffies_to_clock_t(jiffies);
 
-    seq_printf(archivo,"\"CPU\":%d\n}\n",porcentajeCPU);
+    seq_printf(archivo,"\"CPU\":%ld\n%ld}\n%ld",((Ttranscurrido*100)/totalTranscurrido),totalTranscurrido,Ttranscurrido);
     return 0;
 }
 
