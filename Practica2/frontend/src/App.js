@@ -40,7 +40,7 @@ function App() {
 
   useEffect(() => {
     const metodoGET = setInterval(() => {
-      fetch("http://localhost:3001/")
+      fetch("/monitorapi/")
         .then((res) => {
           return res.json();
         })
