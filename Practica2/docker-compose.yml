@@ -21,6 +21,12 @@ services:
       dockerfile: Dockerfile
     container_name: monitorgo
     restart: "on-failure"
+    env_file: ./.env
+    environment:
+      HOST: monitordb
+      USER_NAME: $USER_NAME
+      PASSWORD: $PASSWORD
+      DATABASE: $DATABASE
     ports:
       - "8080:8080"
     expose:
