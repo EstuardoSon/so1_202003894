@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"os"
 	"os/exec"
 	"os/user"
 	"strings"
@@ -14,7 +15,7 @@ import (
 )
 
 func conectDataBase() (*sql.DB, error) {
-	connectionString := "root:password@tcp(monitordb:3306)/Monitor"
+	connectionString := os.Getenv("USER_NAME") + ":" + os.Getenv("PASSWORD") + "@tcp(" + os.Getenv("HOST") + ")/" + os.Getenv("DATABASE")
 	db, err := sql.Open("mysql", connectionString)
 
 	if err != nil {
