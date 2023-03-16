@@ -11,8 +11,6 @@
 #include <linux/sched.h>
 #include <linux/sched/signal.h>
 #include <linux/mm.h>
-#include <linux/jiffies.h>
-#include <linux/ktime.h>
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Modulo CPU Practica 2");
@@ -23,10 +21,10 @@ static int escribir_archivo(struct seq_file *archivo, void *v)
     //Recorrer procesos y sus hijos
     struct task_struct *task =current;
     struct task_struct *child;
-    //struct mm_struct *ram;
 
     //Calcular porcentaje de CPU utilizado
-    unsigned long act_time, totalTime;
+    unsigned long long tiempo_tasks = 0;
+    unsigned long long jiffies_act = jiffies;
 
     //Porcentaje de RAM usado por proceso
     unsigned int ram = 0;
@@ -35,7 +33,7 @@ static int escribir_archivo(struct seq_file *archivo, void *v)
 
     seq_printf(archivo,"{\n\"Procesos\":[\n");
     for_each_process(task){
-      act_time += task->utime + task->stime;
+      tiempo_tasks += task->stime;
 
       seq_printf(archivo,"{\"Pid\":%d,\"Nombre\":\"%s\",\"Usuario\":%d,",task->pid,task->comm,(task->cred)->uid.val);
       
@@ -72,8 +70,7 @@ static int escribir_archivo(struct seq_file *archivo, void *v)
     }
     seq_printf(archivo,"],\n");
 
-    totalTime = jiffies_to_clock_t(get_jiffies_64());
-    seq_printf(archivo,"\"CPUUsado\":%ld,\n\"CPUTotal\":%ld}\n",act_time,totalTime);
+    seq_printf(archivo,"\"CPUUsado\":%lld,\n\"CPUTotal\":%lld}\n",tiempo_tasks,jiffies_to_nsecs(jiffies_act));
 
     return 0;
 }
