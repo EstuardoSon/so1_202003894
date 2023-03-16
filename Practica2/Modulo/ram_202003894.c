@@ -43,13 +43,13 @@ static struct proc_ops operaciones =
 static int _insert(void)
 {
     proc_create("ram_202003894", 0, NULL, &operaciones);
-    printk(KERN_INFO "RAM Estuardo Gabriel Son Mux\n");
+    printk(KERN_INFO "202003894\n");
     return 0;
 }
 
 static void _remove(void)
 {
-    remove_proc_entry("ram_202003894", NULL);
+    remove_proc_entry("Sistemas Operativos 1", NULL);
     printk(KERN_INFO "RAM Primer Semestre 2023\n");
 }
 
