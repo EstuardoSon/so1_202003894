@@ -47,9 +47,9 @@ type Proceso struct {
 }
 
 type MonitorCPU struct {
-	Procesos  []Proceso
-	CPUUsuado int
-	CPUTotal  int
+	Procesos []Proceso
+	CPUUsado int
+	CPUTotal int
 }
 
 type Ram struct {
@@ -101,7 +101,6 @@ func queryIngresarThread(t Thread, ctx context.Context, db *sql.DB) error {
 
 func queryIngresarRend(cpu float64, ram int, ctx context.Context, db *sql.DB) error {
 	qry := `call setRendimiento(?,?);`
-
 	_, err := db.ExecContext(ctx, qry, cpu, ram)
 
 	if err != nil {
@@ -158,7 +157,7 @@ func main() {
 			panic(err)
 		}
 
-		err = queryIngresarRend((float64(moduloCPU.CPUUsuado)*100.00)/float64(moduloCPU.CPUTotal), ram.Ram, ctx, db)
+		err = queryIngresarRend((float64(moduloCPU.CPUUsado)*100.00)/float64(moduloCPU.CPUTotal), ram.Ram, ctx, db)
 		if err != nil {
 			panic(err)
 		}
