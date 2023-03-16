@@ -18,9 +18,6 @@ MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Modulo CPU Practica 2");
 MODULE_AUTHOR("Estuardo Gabriel Son Mux");
 
-//static unsigned long prev_jiffies;
-//static ktime_t prev_time;
-
 static int escribir_archivo(struct seq_file *archivo, void *v)
 {
     //Recorrer procesos y sus hijos
@@ -29,8 +26,7 @@ static int escribir_archivo(struct seq_file *archivo, void *v)
     //struct mm_struct *ram;
 
     //Calcular porcentaje de CPU utilizado
-    unsigned long long trans_time = 0;
-    ktime_t act_time = ktime_get();
+    unsigned long act_time, totalTime;
 
     //Porcentaje de RAM usado por proceso
     unsigned int ram = 0;
@@ -39,8 +35,7 @@ static int escribir_archivo(struct seq_file *archivo, void *v)
 
     seq_printf(archivo,"{\n\"Procesos\":[\n");
     for_each_process(task){
-      if(task->stime > 0){ trans_time += task->stime; }
-      if(task->utime > 0){ trans_time += task->utime; }
+      act_time += task->utime + task->stime;
 
       seq_printf(archivo,"{\"Pid\":%d,\"Nombre\":\"%s\",\"Usuario\":%d,",task->pid,task->comm,(task->cred)->uid.val);
       
@@ -77,7 +72,8 @@ static int escribir_archivo(struct seq_file *archivo, void *v)
     }
     seq_printf(archivo,"],\n");
 
-    seq_printf(archivo,"\"CPUUsado\":%lld,\n\"CPUTotal\":%lld}\n",trans_time,act_time);
+    totalTime = jiffies_to_clock_t(get_jiffies_64());
+    seq_printf(archivo,"\"CPUUsado\":%ld,\n\"CPUTotal\":%ld}\n",act_time,totalTime);
 
     return 0;
 }
