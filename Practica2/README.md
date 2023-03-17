@@ -4,7 +4,7 @@ El proposito de la practica es la utilizacion de google Cloud para el lanzamient
 
 | Servicio | Manual |
 | ------ | ------ |
-| Frontend | [frontend/README.md](https://github.com/EstuardoSon/so1_202003894/blob/main/Practica2/frontend/README.MD) |
+| Frontend | [frontend/README.md](https://github.com/EstuardoSon/so1_202003894/blob/main/Practica2/frontend/README.md) |
 | Backend GO | [Go/README.md](https://github.com/EstuardoSon/so1_202003894/blob/main/Practica2/Go/README.MD) |
 | API | [Api/README.md](https://github.com/EstuardoSon/so1_202003894/blob/main/Practica2/Api/README.MD) |
 | Modulos | [Modulo/README.md](https://github.com/EstuardoSon/so1_202003894/blob/main/Practica2/Modulo/README.MD) |
