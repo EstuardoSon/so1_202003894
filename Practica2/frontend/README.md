@@ -1,70 +1,164 @@
-# Getting Started with Create React App
+# Informacion General
+La aplicacion esta elaborada con docker sin embargo esta es desplegada con docker en la base en docker.
+La misma cuenta de 3 componentes para su funcionamiento a parte del componente principal App.js
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## App.js
+En este componente se establecen los estado padres que serviran para trasladar la informacion a los compenentes hijos. Es en este mismo en el que se realiza las solicitudes http para la obtencion de la informacion de la base de datos.
 
-## Available Scripts
+### Estados RAM y CPU
+Estos estados se utilizan para ingresar la informacion dentro de las graficas de pie.
 
-In the project directory, you can run:
+```
+const [dataCPU, setCPU] = useState({
+    labels: ["Usado", "No Usado"],
+    datasets: [
+      {
+        label: "Grafica CPU",
+        data: [0, 100],
+        backgroundColor: ["rgb(27,57,157)", "rgb(66,70,79)"],
+      },
+    ],
+  });
 
-### `npm start`
+  const [dataRAM, setRam] = useState({
+    labels: ["Usado", "No Usado"],
+    datasets: [
+      {
+        label: "Grafica CPU",
+        data: [0, 100],
+        backgroundColor: ["rgb(27,57,157)", "rgb(66,70,79)"],
+      },
+    ],
+  });
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Estado tablas
+En este estado se almacena la informacion de los procesos que se ejecutan y sus hijos, asi mismo, se almacena la informacion de la cantidad de procesos en cada uno de sus estados.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```
+const [tablas, setTablas] = useState({
+    General: [
+      { texto: "Proceso en Ejecucion", valor: 0 },
+      { texto: "Proceso Suspendidos", valor: 0 },
+      { texto: "Proceso Detenidos", valor: 0 },
+      { texto: "Proceso Zombie", valor: 0 },
+      { texto: "Total de Procesos", valor: 0 },
+    ],
+    Procesos: [],
+  });
+```
 
-### `npm test`
+### 
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Solicitud GET
+```
+// Funcion que se repite cada 3 segundos con la que se hace la solicitud GET a la api de nodejs
+useEffect(() => {
+    const metodoGET = setInterval(() => {
+      fetch("/monitorapi/")
+        .then((res) => {
+          return res.json();
+        })
+        .then((res) => {
+          console.log(res);
 
-### `npm run build`
+          // Insercion de datos en el estado Tablas
+          setTablas({
+            General: [
+              { texto: "Proceso en Ejecucion", valor: res.General.RUNNING },
+              { texto: "Proceso Suspendidos", valor: res.General.SLEEPING },
+              { texto: "Proceso Detenidos", valor: res.General.STOPPED },
+              { texto: "Proceso Zombie", valor: res.General.ZOMBIE },
+              { texto: "Total de Procesos", valor: res.General.TOTAL },
+            ],
+            Procesos: res.Procesos,
+          });
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+          // Insercion de datos en el estado CPU
+          setCPU({
+            labels: ["Usado", "No Usado"],
+            datasets: [
+              {
+                label: "Grafica CPU",
+                data: [res.General.CPU, 100 - res.General.CPU],
+                backgroundColor: ["rgb(27,57,157)", "rgb(66,70,79)"],
+              },
+            ],
+          });
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+          // Insercion de datos en el estado RAM
+          setRam({
+            labels: ["Usado", "No Usado"],
+            datasets: [
+              {
+                label: "Grafica RAM",
+                data: [res.General.RAM, 100 - res.General.RAM],
+                backgroundColor: ["rgb(27,57,157)", "rgb(66,70,79)"],
+              },
+            ],
+          });
+        });
+    }, 3000);
+    return () => clearInterval(metodoGET);
+  }, []);
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## GraficaPie.js
+Este componente se utiliza para la creacion de las graficas de Pie que mostraran el porcentaje utilizado de RAM y CPU.
 
-### `npm run eject`
+```
+import React, { Component } from "react";
+import { Doughnut } from "react-chartjs-2";
+import { Chart as ChartJS } from "chart.js/auto";
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+class GraficaCPU extends Component {
+  state = {};
+  render() {
+    return (
+      <div className="p-3 col-md-6">
+        <h4>{this.props.nombre}</h4>
+        <Doughnut data={this.props.dataPie} />
+      </div>
+    );
+  }
+}
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+export default GraficaCPU;
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## TablaIG.js
+En este componente se crea la tabla con la informacion general de la cantidad de procesos en cada uno de sus estados.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```
+import React, { Component } from "react";
 
-## Learn More
+class TablaIG extends Component {
+  state = {};
+  render() {
+    let n = 0;
+    return (
+      <table className="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">INFORMACION</th>
+            <th scope="col">VALOR</th>
+          </tr>
+        </thead>
+        <tbody>
+          {this.props.data.map((info) => (
+            <tr key={n++}>
+              <th scope="row">{info.texto}</th>
+              <td>{info.valor}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  }
+}
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+export default TablaIG;
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## TablaProcesos.js
+En este componente se crea un menu desplegable que servira a modo de arbol para mostrar los componentes padres y sus hijos.

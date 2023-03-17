@@ -1,0 +1,195 @@
+# main.go
+Este archivo funciona como conexion entre el modulo y la base de datos ya que el mismo hace una lectura a los modulos y decodifica los json que estos devuelven para posteriormente ingresar la informacion de la base de datos no sin antes borrar los datos previos.
+
+
+## Conexion a la base de datos
+```
+func conectDataBase() (*sql.DB, error) {
+	connectionString := os.Getenv("USER_NAME") + ":" + os.Getenv("PASSWORD") + "@tcp(" + os.Getenv("HOST") + ")/" + os.Getenv("DATABASE")
+	db, err := sql.Open("mysql", connectionString)
+
+	if err != nil {
+		panic(err)
+	}
+
+	err = db.Ping()
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
+}
+```
+
+## Estructuras
+```
+type Thread struct {
+	Pid    int
+	Tpid   int
+	Nombre string
+}
+
+type Proceso struct {
+	Pid      int
+	Nombre   string
+	Usuario  uint32
+	Estado   string
+	RamUsada int
+	RamTotal int
+	Threads  []Thread
+}
+
+type MonitorCPU struct {
+	Procesos []Proceso
+	CPUUsado int
+	CPUTotal int
+}
+
+type Ram struct {
+	Ram int
+}
+```
+
+## Vaciar la base de datos
+```
+func queryVaciar(ctx context.Context, db *sql.DB) error {
+	qry := `call clearData();`
+
+	_, err := db.ExecContext(ctx, qry)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+```
+
+## Ingresar Proceso
+```
+func queryIngresarProceso(p Proceso, ctx context.Context, db *sql.DB) error {
+	u, err := user.LookupId(fmt.Sprint(p.Usuario))
+	usuario := "Desconocido"
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		usuario = u.Username
+	}
+	qry := `call setProcess(?,?,?,?,?);`
+
+	_, err = db.ExecContext(ctx, qry, p.Pid, p.Nombre, usuario, p.Estado, (float64(p.RamUsada*100.0))/float64(p.RamTotal))
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+```
+
+## Ingresar Thread
+```
+func queryIngresarThread(t Thread, ctx context.Context, db *sql.DB) error {
+	qry := `call setThread(?,?,?);`
+
+	_, err := db.ExecContext(ctx, qry, t.Pid, t.Tpid, t.Nombre)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+```
+
+## Ingresar Rendimiento
+```
+func queryIngresarRend(cpu float64, ram int, ctx context.Context, db *sql.DB) error {
+	qry := `call setRendimiento(?,?);`
+	_, err := db.ExecContext(ctx, qry, cpu, ram)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+```
+
+## Funcion Main
+En esta funcione con la que se inicia la aplicacion y hace la decodificacion de los json. Asi mismo, mantiene en ejecucion la aplicacion.
+
+```
+func main() {
+	for {
+		db, err := conectDataBase()
+		if err != nil {
+			panic(err)
+		}
+
+		//Json RAM
+		cmd := exec.Command("sh", "-c", "cat /proc/ram_202003894")
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		var ram Ram
+
+		output := string(out[:])
+
+		err = json.Unmarshal([]byte(output), &ram)
+
+		if err != nil {
+			panic(err)
+		}
+
+		//Json CPU
+		cmd = exec.Command("sh", "-c", "cat /proc/cpu_202003894")
+		out, err = cmd.CombinedOutput()
+		if err != nil {
+			panic(err)
+		}
+
+		var moduloCPU MonitorCPU
+		output = string(out[:])
+
+		err = json.Unmarshal([]byte(strings.Replace(output, ",\n]", "\n]", -1)), &moduloCPU)
+
+		if err != nil {
+			panic(err)
+		}
+
+		ctx := context.Background()
+
+		err = queryVaciar(ctx, db)
+		if err != nil {
+			panic(err)
+		}
+
+		err = queryIngresarRend((float64(moduloCPU.CPUUsado)*100.00)/float64(moduloCPU.CPUTotal), ram.Ram, ctx, db)
+		if err != nil {
+			panic(err)
+		}
+
+		for _, p := range moduloCPU.Procesos {
+			err = queryIngresarProceso(p, ctx, db)
+			if err != nil {
+				panic(err)
+			}
+
+			for _, t := range p.Threads {
+				err = queryIngresarThread(t, ctx, db)
+				if err != nil {
+					panic(err)
+				}
+			}
+		}
+
+		db.Close()
+
+		fmt.Println("PROCESO COMPLETADO")
+		time.Sleep(5 * time.Second)
+	}
+}
+```
