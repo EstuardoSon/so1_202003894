@@ -70,7 +70,7 @@ static int escribir_archivo(struct seq_file *archivo, void *v)
     }
     seq_printf(archivo,"],\n");
 
-    seq_printf(archivo,"\"CPUUsado\":%lld,\n\"CPUTotal\":%lld}\n",tiempo_tasks,jiffies_to_nsecs(jiffies_act));
+    seq_printf(archivo,"\"CPUUsado\":%lld,\n\"CPUTotal\":%lld}\n",jiffies_to_nsecs(tiempo_tasks),jiffies_to_nsecs(jiffies_act));
 
     return 0;
 }
