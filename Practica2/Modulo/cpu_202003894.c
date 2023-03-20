@@ -33,7 +33,7 @@ static int escribir_archivo(struct seq_file *archivo, void *v)
 
     seq_printf(archivo,"{\n\"Procesos\":[\n");
     for_each_process(task){
-      tiempo_tasks += task->stime;
+      tiempo_tasks += task->stime + task->utime;
 
       seq_printf(archivo,"{\"Pid\":%d,\"Nombre\":\"%s\",\"Usuario\":%d,",task->pid,task->comm,(task->cred)->uid.val);
       
