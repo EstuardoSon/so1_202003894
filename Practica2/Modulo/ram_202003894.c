@@ -49,8 +49,8 @@ static int _insert(void)
 
 static void _remove(void)
 {
-    remove_proc_entry("Sistemas Operativos 1", NULL);
-    printk(KERN_INFO "RAM Primer Semestre 2023\n");
+    remove_proc_entry("ram_202003894", NULL);
+    printk(KERN_INFO "Sistemas Operativos 1\n");
 }
 
 module_init(_insert);
